@@ -119,6 +119,7 @@ class NoAuthMiddleware(base_wsgi.Middleware):
 
     @webob.dec.wsgify(RequestClass=wsgi.Request)
     def __call__(self, req):
+        LOG.debug("CBAKE: we are in the NoAuthMiddleware")
         if 'X-Auth-Token' not in req.headers:
             user_id = req.headers.get('X-Auth-User', 'admin')
             project_id = req.headers.get('X-Auth-Project-Id', 'admin')

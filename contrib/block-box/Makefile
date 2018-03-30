@@ -7,13 +7,13 @@ all: base lvm
 blockbox: base lvm
 
 base:
-	docker build https://git.openstack.org/openstack/loci.git \
+	docker build https://github.com/cbaker423/loci.git \
 		--build-arg PROJECT=cinder \
 		--build-arg FROM=$(PLATFORM) \
 		--build-arg PROJECT_REF=$(CINDER_BRANCH) \
 		--tag $(TAG)
 lvm:
-	docker build https://git.openstack.org/openstack/loci.git \
+	docker build https://github.com/cbaker423/loci.git \
 		--build-arg PROJECT=cinder \
 		--build-arg FROM=$(PLATFORM) \
 		--build-arg PROJECT_REF=$(CINDER_BRANCH) \
