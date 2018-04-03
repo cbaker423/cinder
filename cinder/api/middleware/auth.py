@@ -138,6 +138,7 @@ class NoAuthMiddleware(base_wsgi.Middleware):
         user_id, _sep, project_id = token.partition(':')
         project_id = project_id or user_id
         remote_address = getattr(req, 'remote_address', '127.0.0.1')
+        LOG.debug("REMOTE_ADDR: " + remote_address)
         if CONF.use_forwarded_for:
             remote_address = req.headers.get('X-Forwarded-For', remote_address)
         ctx = context.RequestContext(user_id,
@@ -147,3 +148,26 @@ class NoAuthMiddleware(base_wsgi.Middleware):
 
         req.environ['cinder.context'] = ctx
         return self.application
+
+
+class IAMMiddleware(base_wsgi.Middleware):
+
+    @webob.dec.wsgify(RequestClass=base_wsgi.Request)
+    def __call__(self, req):
+        LOG.debug("CBAKE: THIS IS A TEST IN IAM MIDDLEWARE")
+        user_id = req.headers.get('X-Auth-User', 'admin')
+        project_id = req.headers.get('X-Auth-Project-Id', 'admin')
+        os_url = os.path.join(req.url, project_id)
+        res = webob.Response()
+        res.headers['X-Auth-Token'] = '%s:%s' % (user_id, project_id)
+        res.headers['X-Server-Management-Url'] = os_url
+        res.content_type = 'text/plain'
+        res.status_int = http_client.NO_CONTENT
+        return res
+
+        #remote_address = getattr(req, 'remote_address', '127.0.0.1')
+        #ctx = context.RequestContext('test_user_name',
+        #                             'test_project_name',
+        #                             is_admin=True,
+        #                             remote_address=remote_address)
+        #req.environ['cinder.context'] = ctx
